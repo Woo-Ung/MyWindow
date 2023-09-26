@@ -1,5 +1,5 @@
 #include <Windows.h>
-
+#include <sstream>
 //API : Application Programming Interface
 // Windows API
 //	Win16 - 80186, 80286
@@ -135,12 +135,51 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
 	return msg.wParam;
 }
 
-// 4. '윈도우프로시저' 작성
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+void OnPaint(HWND hwnd)
 {
-	switch (message)
+	PAINTSTRUCT ps;
+	HDC hdc = BeginPaint(hwnd, &ps);
+
+	HPEN redPen = CreatePen(PS_SOLID, 1,RGB(255,0,0));
+	HBRUSH hatchBrush = CreateHatchBrush(HS_CROSS, RGB(255,0,0));
+
+	SelectObject(hdc, redPen);
+	SelectObject(hdc, hatchBrush);
+	Rectangle(hdc, 0, 0, 100, 100);
+
+	DeleteObject(hatchBrush);
+
+	EndPaint(hwnd, &ps);	
+}
+
+// 4. '윈도우프로시저' 작성
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)	//LRESULT : Long Result
+{																					//			pointer
+	switch (message)																// 
+	{																				// CALLBACK : 콜백함수
+	case WM_PAINT:																	//		(등록해 놓으면 운영체제가 알아서 불러옴)
+	{																				// 
+		OnPaint(hwnd);																// WPARAM : WORD Parameter
+																					// LPARAM : Long ptr Parameter
+		break;
+	}
+	
+	case WM_KEYDOWN:																
+	{																				
+		std::ostringstream oss;														
+		oss << "virtual keycod = " << wParam << std::endl;							
+		OutputDebugStringA(oss.str().c_str());
+		break;
+	}
+	case WM_LBUTTONDOWN:
 	{
-	case WM_CLOSE:
+		std::ostringstream oss;		
+		oss << "x : " << LOWORD(lParam) << ", y : " << HIWORD(lParam) << std::endl;
+		
+		OutputDebugStringA(oss.str().c_str());
+		break;
+	}
+	case WM_CLOSE:	//WM : Window Message
 		DestroyWindow(hwnd);
 		break;
 	case WM_DESTROY:
@@ -151,3 +190,29 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 			break;
 	}
 }
+
+// Graphics
+//
+// GDI : Graphics Device Interface
+// 
+// WinG : Windows for Gaming	(없어짐)
+// 
+// DirectDraw	(없어짐)
+//	하드웨어 가속(Hardware Accelerate)
+// 
+// GDI+	(없어짐)
+// 
+// Direct2D
+// 
+// DirectX
+//	Direct2d
+//	Direct3d
+//	..
+// 
+// GDI : Graphics Device Interface
+//	
+//	BRUSH
+//	PEN
+//	도형
+//	
+//
