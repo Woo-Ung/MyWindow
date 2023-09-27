@@ -1,5 +1,9 @@
 #include <Windows.h>
 #include <sstream>
+#include <gdiplus.h>
+
+#pragma comment (lib,"Gdiplus.lib")
+
 //API : Application Programming Interface
 // Windows API
 //	Win16 - 80186, 80286
@@ -77,8 +81,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
 					_In_ LPSTR lpCmdLine,
 					_In_ int nShowCmd)
 {
-	/*MessageBox(nullptr, L"Hello World", L"MyWindow", MB_ICONEXCLAMATION | MB_OKCANCEL);*/
+	Gdiplus::GdiplusStartupInput gpsi;
+	ULONG_PTR gdiToken;
+	Gdiplus::GdiplusStartup(&gdiToken, &gpsi, nullptr);
 
+	/*MessageBox(nullptr, L"Hello World", L"MyWindow", MB_ICONEXCLAMATION | MB_OKCANCEL);*/
 
 	// 1. '윈도우클래스' 등록
 	WNDCLASSEX wc{};
@@ -100,6 +107,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
 	}
 
 	// 2. '윈도우'를 생성
+	RECT wr = { 0,0,640,480 };
+	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
+
 	HWND hwnd;
 	hwnd = CreateWindowEx(
 		0,
@@ -108,8 +118,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		640,
-		480,
+		wr.right-wr.left,
+		wr.bottom-wr.top,
 		NULL,
 		NULL,
 		hInstance,
@@ -132,6 +142,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
 		DispatchMessage(&msg);
 	}
 
+	Gdiplus::GdiplusShutdown(gdiToken);
 	return msg.wParam;
 }
 
@@ -140,14 +151,23 @@ void OnPaint(HWND hwnd)
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hwnd, &ps);
 
-	HPEN redPen = CreatePen(PS_SOLID, 1,RGB(255,0,0));
-	HBRUSH hatchBrush = CreateHatchBrush(HS_CROSS, RGB(255,0,0));
+	//HPEN redPen = CreatePen(PS_SOLID, 1,RGB(255,0,0));
+	//HBRUSH hatchBrush = CreateHatchBrush(HS_CROSS, RGB(255,0,0));
 
-	SelectObject(hdc, redPen);
-	SelectObject(hdc, hatchBrush);
-	Rectangle(hdc, 0, 0, 100, 100);
+	//SelectObject(hdc, redPen);
+	//SelectObject(hdc, hatchBrush);
+	//Rectangle(hdc, 0, 0, 100, 100);
 
-	DeleteObject(hatchBrush);
+	//DeleteObject(hatchBrush);
+	//DeleteObject(redPen);
+
+	Gdiplus::Pen redPen(Gdiplus::Color(255,255,0,0));
+	Gdiplus::HatchBrush hatchBrush(Gdiplus::HatchStyle::HatchStyleCross, Gdiplus::Color(255, 255, 0, 0));
+	Gdiplus::Image image(L"image.png");
+
+	Gdiplus::Graphics graphics(hdc);
+	/*graphics.DrawRectangle(&redPen, 0, 0, 100, 100);*/
+	graphics.DrawImage(&image, 0, 0,600,600);
 
 	EndPaint(hwnd, &ps);	
 }
@@ -215,4 +235,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 //	PEN
 //	도형
 //	
+//	Event Driven System
+//		Callback Function
+// 
 //
