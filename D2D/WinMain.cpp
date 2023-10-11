@@ -1,9 +1,13 @@
 #include <windows.h>
 #include <d2d1.h>
+#include <math.h>
 
 #pragma comment (lib, "d2d1.lib")
 
 const wchar_t gClassName[] = L"MyWindowClass";
+
+#define SAFE_RELEASE(p) {if(p){p->Release(); p = 0;}}
+//SAFE_RELEASE(gpRadialBrush);
 
 // 규칙
 // 1. Direct2D 팩토리 생성
@@ -16,7 +20,12 @@ const wchar_t gClassName[] = L"MyWindowClass";
 ID2D1Factory* gpD2DFactory{};
 ID2D1HwndRenderTarget* gpRenderTarget{};
 
+ID2D1SolidColorBrush* gpBrush{};
+ID2D1RadialGradientBrush* gpRadialBrush{};
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+void OnPaint(HWND hwnd);
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -80,18 +89,71 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
         return 0;
     }
 
+    hr = gpRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &gpBrush);
+    D2D1_GRADIENT_STOP stops[2]
+    {
+        {0.0f, D2D1::ColorF(D2D1::ColorF::Yellow)},
+        {1.0f, D2D1::ColorF(D2D1::ColorF::Crimson)}
+    };
+    ID2D1GradientStopCollection* pGradientStops{};
+    hr = gpRenderTarget->CreateGradientStopCollection(
+        stops,
+        2,
+        &pGradientStops
+    );
+
+    hr = gpRenderTarget->CreateRadialGradientBrush(
+        D2D1::RadialGradientBrushProperties(D2D1::Point2F(50, 150), D2D1::Point2F(0.0f, 0.0f), 50, 50),
+        pGradientStops,
+        &gpRadialBrush
+    );
+
+    if (pGradientStops != nullptr)
+    {
+        pGradientStops->Release();
+        pGradientStops = nullptr;
+    }
 
     ShowWindow(hwnd, nShowCmd);
     UpdateWindow(hwnd);
 
-    MSG msg;
+    /*MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
+        OnPaint(hwnd);
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+    }*/
+    MSG msg;
+    while (true)
+    {
+        if (PeekMessage(&msg, NULL,0,0,PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+
+            if (msg.message == WM_QUIT)
+            {
+                break;
+            }
+        }
+        else
+        {
+            OnPaint(hwnd);
+        }
     }
 
     //해제
+    if (gpRadialBrush != nullptr)
+    {
+        gpRadialBrush->Release();
+        gpRadialBrush = nullptr;
+    }
+    if (gpBrush != nullptr)
+    {
+        gpBrush->Release();
+        gpBrush = nullptr;
+    }
     if (gpRenderTarget != nullptr)
     {
         gpRenderTarget->Release();
@@ -114,6 +176,22 @@ void OnPaint(HWND hwnd)
     // RenderTarget에 그리기
     gpRenderTarget->BeginDraw();
     gpRenderTarget->Clear(D2D1::ColorF(0.0f, 0.2f, 0.4f, 1.0f));    //정규화 (255,0,0,0)/255 -> (1,0,0,0), (1,0,0,0)x255 -> (255,0,0,0)
+       
+    gpRenderTarget->FillRectangle(D2D1::RectF(0.0f, 0.0f, 100.0f, 100.0f), gpBrush);
+     
+    gpBrush->SetColor(D2D1::ColorF(0.0f, 0.0f, 1.0f));
+    gpBrush->SetOpacity(0.5f);
+    gpRenderTarget->FillRectangle(D2D1::RectF(50.0f, 50.0f, 150.f, 150.0f), gpBrush);
+        
+    static float angle = 0.0f;
+
+    gpRenderTarget->FillEllipse(
+        D2D1::Ellipse(D2D1::Point2F(75.0f + sinf(angle) * 25.0f, 150.0f), 50.0f, 50.0f),
+        gpRadialBrush
+    );
+   
+    angle += 0.15f;
+
     gpRenderTarget->EndDraw();
 
     EndPaint(hwnd, &ps);
