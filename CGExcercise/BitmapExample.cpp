@@ -90,3 +90,6 @@ void BitmapExample::PresentBuffer()
     mspFrameBuffer->CopyFromMemory(nullptr, &mspBackBuffer[0], BITMAP_WIDTH * BITMAP_BYTECOUNT);
 }
 
+//¿ø
+//x = sin@ * r
+//y = sin@ * r
