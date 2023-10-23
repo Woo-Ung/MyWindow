@@ -26,6 +26,15 @@
 //    ***´Ü¾î ÀÇ¹Ì meta : about***
 //        metadata
 
+//ÆÈ·¹Æ®
+//-Èæ¹é (1)
+//-CGA (16)
+//-EGA (256)
+//     ex)) 0-°ËÁ¤ 1-»¡°­ 2-ÃÊ·Ï ......255-ºÐÈ«
+//- VGA (true color)
+//    16bit color(R 5 G 6 B 5)
+//    32bit color(R 8 G 8 B 8 A 8)
+
 HRESULT ImageExample::LoadBMP(LPCWSTR filename, ID2D1Bitmap** ppBitmap)
 {
     std::ifstream file;

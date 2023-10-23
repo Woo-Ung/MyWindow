@@ -19,4 +19,3 @@ public:
 	void Render() override;
 	void Release() override;
 };
-
