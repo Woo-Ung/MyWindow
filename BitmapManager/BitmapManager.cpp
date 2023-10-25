@@ -67,7 +67,7 @@ void BitmapManager::Release()
 
 ID2D1Bitmap* BitmapManager::LoadBitmap(wstring filename)
 {
-    if (mspWICFactory)
+    if (!mspWICFactory)
     {
         ThrowIfFailed(E_FAIL, "WICFactory must not null");
         return nullptr;
