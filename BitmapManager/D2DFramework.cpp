@@ -1,7 +1,6 @@
 #include "D2DFramework.h"
 
 #pragma comment (lib, "d2d1.lib")
-#pragma comment (lib, "WindowsCodecs.lib")
 
 HRESULT D2DFramework::InitWindow(HINSTANCE hInstance, LPCWSTR title, UINT w, UINT h)
 {
@@ -48,10 +47,7 @@ HRESULT D2DFramework::InitWindow(HINSTANCE hInstance, LPCWSTR title, UINT w, UIN
 HRESULT D2DFramework::InitD2D(HWND hwnd)
 {
     HRESULT hr;
-
-    hr = ::CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER,
-        IID_PPV_ARGS(mspWICFactory.GetAddressOf()));
-
+    
     hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, mspD2DFactory.GetAddressOf());
     ThrowIfFailed(hr);
 
@@ -79,7 +75,10 @@ HRESULT D2DFramework::Initialize(HINSTANCE hInstance, LPCWSTR title, UINT w, UIN
     ThrowIfFailed(CoInitialize(nullptr));
 
     ThrowIfFailed(InitWindow(hInstance, title, w, h));
-    ThrowIfFailed(InitD2D(mHwnd));
+    ThrowIfFailed(InitD2D(mHwnd), "Failed To InitD2D");
+
+    HRESULT hr = BitmapManager::Instance().Initialize(mspRenderTarget.Get());
+    ThrowIfFailed(hr, "Failed To BitmapManager Initialize");
 
     ShowWindow(mHwnd, SW_SHOW);
     UpdateWindow(mHwnd);
@@ -88,12 +87,12 @@ HRESULT D2DFramework::Initialize(HINSTANCE hInstance, LPCWSTR title, UINT w, UIN
 
 void D2DFramework::Release()
 {
+    BitmapManager::Instance().Release();
+
     mspRenderTarget.Reset();
     mspD2DFactory.Reset();
-    mspWICFactory.Reset();
 
-    CoUninitialize();
-}
+    CoUninitialize();}
 
 int D2DFramework::GameLoop()
 {

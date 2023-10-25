@@ -53,7 +53,7 @@ HRESULT BitmapManager::Initialize(ID2D1HwndRenderTarget* pRT)
 	HRESULT hr = ::CoCreateInstance(CLSID_WICImagingFactory, nullptr,
 		CLSCTX_INPROC_SERVER,
 		IID_PPV_ARGS(mspWICFactory.GetAddressOf()));
-	ThrowIfFailed(hr, "WICFactory Creation failed");
+	ThrowIfFailed(hr, "WICFactory Creation failed");   
 
 	return hr;
 }

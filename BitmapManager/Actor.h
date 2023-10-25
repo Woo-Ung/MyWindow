@@ -6,8 +6,7 @@ class Actor
 {
 protected:
 	D2DFramework* mpFramework;
-
-	Microsoft::WRL::ComPtr<ID2D1Bitmap> mspBitmap;
+	ID2D1Bitmap* mpBitmap;
 
 	float mX;
 	float mY;
@@ -21,7 +20,6 @@ public:
 	virtual ~Actor();
 
 private:
-	HRESULT LoadWICImage(LPCWSTR filename);
 	void Draw(float x, float y, float opacity = 1.0f);
 
 public:
