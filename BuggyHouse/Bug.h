@@ -3,7 +3,7 @@
 
 class Bug : public Actor
 {
-	enum class Direction
+	/*enum class Direction
 	{
 		UP,
 		UP_RIGHT,
@@ -15,8 +15,11 @@ class Bug : public Actor
 		UP_LEFT,
 		COUNT
 	};
+	Direction mDirection;*/  // = mRotation
 
-	Direction mDirection;
+	const D2D_POINT_2F UPVECTOR{ 0.0f, -1.0f };
+
+	float mRotation;
 	float mSteps;
 
 public:
