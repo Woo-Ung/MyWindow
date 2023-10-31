@@ -23,7 +23,7 @@ void BuggyHouse::Render()
     mspRenderTarget->SetTransform(D2D1::Matrix3x2F::Translation(0, 0));
     mspRenderTarget->Clear(D2D1::ColorF(0.0f, 0.2f, 0.4f, 1.0f));
 
-    
+    CheckBugs();
 
     mspBackground->Draw();
     for (auto& bug : mBugList)
@@ -49,4 +49,31 @@ void BuggyHouse::Release()
     mspBackground.reset();
 
     D2DFramework::Release();
+}
+
+void BuggyHouse::CheckBugs()
+{
+    if (GetAsyncKeyState(VK_LBUTTON) & 0x8000 )
+    {
+        POINT pt;
+        GetCursorPos(&pt);
+        ScreenToClient(mHwnd, &pt);
+        
+        auto itr = std::remove_if(mBugList.begin(), mBugList.end(),
+            [&] (auto& actor) {
+                Bug* p = static_cast<Bug*>(actor.get());
+                p->IsClicked(pt);
+                if (p->mIsDead)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        );
+
+        mBugList.erase(itr, mBugList.end());
+    }
 }

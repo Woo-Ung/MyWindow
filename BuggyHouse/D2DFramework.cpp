@@ -149,5 +149,6 @@ LRESULT D2DFramework::WindProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
         break;
     default:
         return DefWindowProc(hwnd, message, wParam, lParam);
-    }		return 0;
+    }		
+    return 0;
 }

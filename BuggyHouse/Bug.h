@@ -21,10 +21,14 @@ class Bug : public Actor
 
 	float mRotation;
 	float mSteps;
+public:
+	bool mIsDead;
 
 public:
 	Bug(D2DFramework* pFramework);
 
 	virtual void Draw() override;
+
+	bool IsClicked(POINT& pt);
 };
 
