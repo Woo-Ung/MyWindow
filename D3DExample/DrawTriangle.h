@@ -35,6 +35,7 @@ private:
 	HRESULT CreateTextureFromBMP();
 
 protected:
+	void Update(float delta) override;
 	void Render() override;
 };
 
