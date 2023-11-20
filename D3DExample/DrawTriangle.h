@@ -1,6 +1,7 @@
 #pragma once
 
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
 #include "D3DFramework.h"
 
 
@@ -10,6 +11,11 @@ class DrawTriangle : public D3DFramework
 	{
 		FLOAT x, y, z;
 		FLOAT U, V;
+	};
+
+	struct MatrixBuffer
+	{
+		DirectX::XMMATRIX world;
 	};
 
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> mspInputLayout;
@@ -23,6 +29,12 @@ class DrawTriangle : public D3DFramework
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> mspSamplerState;
 	Microsoft::WRL::ComPtr<ID3D11BlendState> mspBlendState;
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer> mspConstantBuffer;
+
+	float mX, mY;
+	float mRotationZ;
+	DirectX::XMMATRIX mWorld;
 
 public:
 	void Initialize(HINSTANCE hInstance, int width = 800, int height = 600) override;

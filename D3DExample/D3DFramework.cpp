@@ -257,6 +257,7 @@ LRESULT D3DFramework::MessageHandler(HWND hwnd, UINT message, WPARAM wParam, LPA
 
 	case WM_MOUSEMOVE:
 		mInput.SetCursor(LOWORD(lParam), HIWORD(lParam));
+		break;
 
 	case WM_ACTIVATE:
 		if (LOWORD(wParam) == WA_INACTIVE)
